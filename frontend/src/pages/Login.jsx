@@ -1,43 +1,37 @@
 import { useState } from "react";
-import { login } from "../utils/api";
+import { api } from "../utils/api.js";
+import { useNavigate, Link } from "react-router-dom";
 
-export default function Login({ onLogin }) {
+export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    const res = await login({ email, password });
+    const res = await api.login(email, password);
     if (res.token) {
-      onLogin(res.token);
+      localStorage.setItem("token", res.token);
+      navigate("/dashboard");
     } else {
-      setError(res.message || "Ошибка авторизации");
+      alert(res.message || "Login failed");
     }
   };
 
   return (
-    <div className="max-w-md mx-auto bg-white p-6 rounded-xl shadow-md">
-      <h1 className="text-2xl font-bold mb-4 text-center text-blue-600">Вход</h1>
-      {error && <p className="text-red-500">{error}</p>}
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <input
-          type="email"
-          placeholder="Email"
-          className="w-full p-2 border rounded"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <input
-          type="password"
-          placeholder="Пароль"
-          className="w-full p-2 border rounded"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <button className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
-          Войти
-        </button>
+    <div className="flex justify-center items-center h-screen bg-blue-100">
+      <form onSubmit={handleLogin} className="bg-white p-6 rounded shadow w-80">
+        <h2 className="text-xl mb-4">Login</h2>
+        <input type="email" placeholder="Email"
+          value={email} onChange={(e) => setEmail(e.target.value)}
+          className="w-full mb-2 border p-2 rounded" />
+        <input type="password" placeholder="Password"
+          value={password} onChange={(e) => setPassword(e.target.value)}
+          className="w-full mb-2 border p-2 rounded" />
+        <button className="bg-blue-600 text-white w-full py-2 rounded">Login</button>
+        <p className="mt-2 text-sm">
+          No account? <Link to="/register" className="text-blue-600">Register</Link>
+        </p>
       </form>
     </div>
   );

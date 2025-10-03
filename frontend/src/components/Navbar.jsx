@@ -1,19 +1,22 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
-export default function Navbar({ token, onLogout }) {
+export default function Navbar() {
+  const navigate = useNavigate();
+  const logout = () => {
+    localStorage.removeItem("token");
+    navigate("/login");
+  };
+
   return (
     <nav className="bg-blue-600 text-white p-4 flex justify-between">
-      <Link to="/" className="font-bold">ControlSystem</Link>
       <div className="space-x-4">
-        {!token ? (
-          <>
-            <Link to="/login" className="hover:underline">Вход</Link>
-            <Link to="/register" className="hover:underline">Регистрация</Link>
-          </>
-        ) : (
-          <button onClick={onLogout} className="hover:underline">Выйти</button>
-        )}
+        <Link to="/dashboard">Dashboard</Link>
+        <Link to="/projects">Projects</Link>
+        <Link to="/defects">Defects</Link>
       </div>
+      <button onClick={logout} className="bg-red-500 px-3 py-1 rounded">
+        Logout
+      </button>
     </nav>
   );
 }

@@ -1,45 +1,43 @@
 import { useState } from "react";
-import { register } from "../utils/api";
+import { api } from "../utils/api.js";
+import { useNavigate, Link } from "react-router-dom";
 
 export default function Register() {
-  const [form, setForm] = useState({ name: "", email: "", password: "" });
-  const [message, setMessage] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [role, setRole] = useState("engineer");
+  const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
-    const res = await register(form);
-    setMessage(res.message || "Регистрация завершена!");
+    const res = await api.register(email, password, role);
+    if (res.message === "User registered successfully") {
+      navigate("/login");
+    } else {
+      alert(res.message || "Registration failed");
+    }
   };
 
   return (
-    <div className="max-w-md mx-auto bg-white p-6 rounded-xl shadow-md">
-      <h1 className="text-2xl font-bold mb-4 text-center text-blue-600">Регистрация</h1>
-      {message && <p className="text-green-600">{message}</p>}
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <input
-          type="text"
-          placeholder="Имя"
-          className="w-full p-2 border rounded"
-          value={form.name}
-          onChange={(e) => setForm({ ...form, name: e.target.value })}
-        />
-        <input
-          type="email"
-          placeholder="Email"
-          className="w-full p-2 border rounded"
-          value={form.email}
-          onChange={(e) => setForm({ ...form, email: e.target.value })}
-        />
-        <input
-          type="password"
-          placeholder="Пароль"
-          className="w-full p-2 border rounded"
-          value={form.password}
-          onChange={(e) => setForm({ ...form, password: e.target.value })}
-        />
-        <button className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
-          Зарегистрироваться
-        </button>
+    <div className="flex justify-center items-center h-screen bg-blue-100">
+      <form onSubmit={handleRegister} className="bg-white p-6 rounded shadow w-80">
+        <h2 className="text-xl mb-4">Register</h2>
+        <input type="email" placeholder="Email"
+          value={email} onChange={(e) => setEmail(e.target.value)}
+          className="w-full mb-2 border p-2 rounded" />
+        <input type="password" placeholder="Password"
+          value={password} onChange={(e) => setPassword(e.target.value)}
+          className="w-full mb-2 border p-2 rounded" />
+        <select value={role} onChange={(e) => setRole(e.target.value)}
+          className="w-full mb-2 border p-2 rounded">
+          <option value="engineer">Engineer</option>
+          <option value="manager">Manager</option>
+          <option value="observer">Observer</option>
+        </select>
+        <button className="bg-blue-600 text-white w-full py-2 rounded">Register</button>
+        <p className="mt-2 text-sm">
+          Already have an account? <Link to="/login" className="text-blue-600">Login</Link>
+        </p>
       </form>
     </div>
   );

@@ -1,8 +1,25 @@
+import { useEffect, useState } from "react";
+import { api } from "../utils/api.js";
+import Navbar from "../components/Navbar.jsx";
+
 export default function Dashboard() {
+  const [reports, setReports] = useState([]);
+
+  useEffect(() => {
+    api.getReports().then(setReports);
+  }, []);
+
   return (
-    <div className="text-center">
-      <h1 className="text-3xl font-bold text-blue-600">Добро пожаловать в систему!</h1>
-      <p className="mt-2 text-gray-600">Вы успешно авторизованы 🎉</p>
+    <div>
+      <Navbar />
+      <div className="p-6">
+        <h2 className="text-2xl mb-4">Dashboard</h2>
+        <ul>
+          {reports.map((r, i) => (
+            <li key={i}>{r.status}: {r.count}</li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 }

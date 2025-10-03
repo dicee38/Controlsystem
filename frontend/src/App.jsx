@@ -1,34 +1,24 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import Dashboard from "./pages/Dashboard";
-import Navbar from "./components/Navbar";
-import { useState } from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Login from "./pages/Login.jsx";
+import Register from "./pages/Register.jsx";
+import Dashboard from "./pages/Dashboard.jsx";
+import Projects from "./pages/Projects.jsx";
+import Defects from "./pages/Defects.jsx";
+import ProtectedRoute from "./components/ProtectedRoute.jsx";
 
 export default function App() {
-  const [token, setToken] = useState(localStorage.getItem("token"));
-
-  const handleLogin = (jwt) => {
-    localStorage.setItem("token", jwt);
-    setToken(jwt);
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    setToken(null);
-  };
-
   return (
     <BrowserRouter>
-      <Navbar token={token} onLogout={handleLogout} />
-      <div className="p-6">
-        <Routes>
-          <Route path="/" element={<Navigate to={token ? "/dashboard" : "/login"} />} />
-          <Route path="/login" element={<Login onLogin={handleLogin} />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/dashboard" element={token ? <Dashboard /> : <Navigate to="/login" />} />
-        </Routes>
-      </div>
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+
+        <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+        <Route path="/projects" element={<ProtectedRoute><Projects /></ProtectedRoute>} />
+        <Route path="/defects" element={<ProtectedRoute><Defects /></ProtectedRoute>} />
+
+        <Route path="*" element={<Login />} />
+      </Routes>
     </BrowserRouter>
   );
 }
