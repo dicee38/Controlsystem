@@ -1,26 +1,27 @@
 import { DataTypes } from "sequelize";
 import sequelize from "../config/db.js";
-import Project from "./Project.js";
 import User from "./User.js";
+import Project from "./Project.js";
 
 const Defect = sequelize.define("Defect", {
-  id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
   title: { type: DataTypes.STRING, allowNull: false },
   description: { type: DataTypes.TEXT },
-  status: {
-    type: DataTypes.ENUM("new", "in_progress", "review", "closed"),
-    defaultValue: "new",
-  },
   priority: {
     type: DataTypes.ENUM("low", "medium", "high"),
     defaultValue: "medium",
   },
+  status: {
+    type: DataTypes.ENUM("new", "in_progress", "review", "closed", "cancelled"),
+    defaultValue: "new",
+  },
+  attachment: { type: DataTypes.STRING }, // путь к файлу
 });
 
-Project.hasMany(Defect);
-Defect.belongsTo(Project);
+// связи
+User.hasMany(Defect, { foreignKey: "assignedTo" });
+Defect.belongsTo(User, { as: "assignee", foreignKey: "assignedTo" });
 
-User.hasMany(Defect, { as: "AssignedDefects", foreignKey: "assigneeId" });
-Defect.belongsTo(User, { as: "Assignee", foreignKey: "assigneeId" });
+Project.hasMany(Defect, { foreignKey: "projectId" });
+Defect.belongsTo(Project, { foreignKey: "projectId" });
 
 export default Defect;
