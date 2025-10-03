@@ -1,10 +1,14 @@
+import dotenv from "dotenv";
+dotenv.config();
+
 export default {
-  jwtSecret: process.env.JWT_SECRET || "supersecret",
+  port: process.env.PORT || 4000,
   db: {
-    database: process.env.DB_NAME || "systema_db",
-    username: process.env.DB_USER || "admin",
-    password: process.env.DB_PASS || "secret",
-    host: process.env.DB_HOST || "db",
-    dialect: "postgres",
+    host: process.env.DB_HOST,
+    port: process.env.DB_PORT,
+    user: process.env.DB_USER,
+    pass: process.env.DB_PASS,
+    name: process.env.DB_NAME,
   },
+  jwtSecret: process.env.JWT_SECRET,
 };
