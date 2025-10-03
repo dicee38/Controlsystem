@@ -1,19 +1,34 @@
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Dashboard from "./pages/Dashboard";
+import Navbar from "./components/Navbar";
 import { useState } from "react";
 
-function App() {
-  const [count, setCount] = useState(0);
+export default function App() {
+  const [token, setToken] = useState(localStorage.getItem("token"));
+
+  const handleLogin = (jwt) => {
+    localStorage.setItem("token", jwt);
+    setToken(jwt);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    setToken(null);
+  };
+
   return (
-    <div className="p-6 text-center">
-      <h1 className="text-2xl text-blue-600 font-bold">React + Vite</h1>
-      <p className="mt-4">Счётчик: {count}</p>
-      <button 
-        className="bg-blue-500 text-white px-4 py-2 rounded mt-2"
-        onClick={() => setCount(count + 1)}
-      >
-        Увеличить
-      </button>
-    </div>
+    <BrowserRouter>
+      <Navbar token={token} onLogout={handleLogout} />
+      <div className="p-6">
+        <Routes>
+          <Route path="/" element={<Navigate to={token ? "/dashboard" : "/login"} />} />
+          <Route path="/login" element={<Login onLogin={handleLogin} />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/dashboard" element={token ? <Dashboard /> : <Navigate to="/login" />} />
+        </Routes>
+      </div>
+    </BrowserRouter>
   );
 }
-
-export default App;
